@@ -4,7 +4,7 @@
  */
 
 
-int NUMBER_OF_LEDS = 8;
+int NUMBER_OF_LEDS = 9;
 
 int button = 2;
 int leds[8] = {4,5,6,7,8,9,10,11};
