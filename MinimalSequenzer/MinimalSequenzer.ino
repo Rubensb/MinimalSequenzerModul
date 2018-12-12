@@ -60,10 +60,10 @@ void syncLedsToSteps(){
 }
 
 void syncLedToActiveStep(int step, int duration) {
-  for (int i = 0; currentMillis < duration) {
-    digitalWrite(leds[step], HIGH)
+  for (int i = 0; currentMillis < duration; i++) {
+    digitalWrite(leds[step], HIGH);
   }
-  digitalWrite(leds[step], LOW)
+  digitalWrite(leds[step], LOW);
 }
 
 void openGate(int step){
@@ -85,14 +85,15 @@ void loop() {
   setStepState(2, 1);
   setStepState(4, 1);
   syncLedsToSteps();
-  syncLedToActiveStep(6, 50);
 
-  /*for (int i = 0; i < NUMBER_OF_LEDS; i++){
-    if ( sustains[i] < millis())
-      digitalWrite(leds[i], sequence[i]);
+
+  for (int i = 0; i < NUMBER_OF_LEDS; i++){
+    syncLedToActiveStep(i, 50);
+  //  if ( sustains[i] < millis())
+  //  digitalWrite(leds[i], sequence[i]);
   }
 
-  if (currentMillis - timing >= offsets[(beat)%NUMBER_OF_LEDS]) {
+  /*if (currentMillis - timing >= offsets[(beat)%NUMBER_OF_LEDS]) {
     timing = currentMillis;
     syncLedToActiveStep(beat%NUMBER_OF_LEDS, 50);
     beat++;
