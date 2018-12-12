@@ -3,7 +3,6 @@
  * Rubens 2018
  */
 
-
 int NUMBER_OF_LEDS = 8;
 
 int button = 2;
@@ -60,6 +59,21 @@ void syncLedsToSteps(){
   }
 }
 
+void syncLedToActiveStep(int step, int duration) {
+  for (int i = 0; currentMillis < duration) {
+    digitalWrite(leds[step], HIGH)
+  }
+  digitalWrite(leds[step], LOW)
+}
+
+void openGate(int step){
+
+}
+
+void sendCv(int step, float value){
+
+}
+
 void setAndSustain(int id, int duration){
   digitalWrite(leds[id], HIGH);
   sustains[id] = millis() + duration;
@@ -67,15 +81,20 @@ void setAndSustain(int id, int duration){
 
 void loop() {
   currentMillis = millis();
+  Serial.println(currentMillis);
+  setStepState(2, 1);
+  setStepState(4, 1);
+  syncLedsToSteps();
+  syncLedToActiveStep(6, 50);
 
-  for (int i = 0; i < NUMBER_OF_LEDS; i++){
+  /*for (int i = 0; i < NUMBER_OF_LEDS; i++){
     if ( sustains[i] < millis())
       digitalWrite(leds[i], sequence[i]);
   }
 
   if (currentMillis - timing >= offsets[(beat)%NUMBER_OF_LEDS]) {
     timing = currentMillis;
-    setAndSustain((beat)%NUMBER_OF_LEDS, 50);
+    syncLedToActiveStep(beat%NUMBER_OF_LEDS, 50);
     beat++;
-  }
+  }*/
 }
