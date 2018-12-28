@@ -9,11 +9,16 @@
 Button btn0 (12, false, false, 100);
 Button btn1 (2, false, false, 100);
 Button btn2 (13, false, false, 100);
+Button btn3 (NULL, false, false, 100);
+Button btn4 (NULL, false, false, 100);
+Button btn5 (NULL, false, false, 100);
+Button btn6 (NULL, false, false, 100);
+Button btn7 (NULL, false, false, 100);
 
 int const NUMBER_OF_STEPS = 8;
-int const clockIn = 0;
+int const clockIn = A5;
 int const clockOut = 0;
-int const triggerOut = 3;
+int const gateOut = 3;
 //int leds[8] = {4,5,6,7,8,9,10,11};
 int const leds[8] = {11,10,9,8,7,6,5,4};
 int stepSequence[8] = {0,0,0,0,0,0,0,0};
@@ -26,14 +31,14 @@ float interval;
 unsigned long elapsedMillis = 0;
 unsigned long currentMillis;
 unsigned long tempMillis = 0;
-unsigned long duration = 50;
+unsigned long newMillis = 0;
 
 void setup() {
   Serial.begin(9600);
   setBpm(0, 1);
-  setBpm(1, 2);
+  setBpm(1, 4);
   setBpm(2, 0);
-  pinMode(triggerOut, OUTPUT);
+  pinMode(gateOut, OUTPUT);
   for (int i = 0; i < NUMBER_OF_STEPS; i++){
     pinMode(leds[i], OUTPUT);
     setOffset(i, 0);
@@ -48,12 +53,27 @@ void setBpm(int pos, int value){
   Serial.println(interval);
 }
 
+void setInterval() {
+  if (analogRead(clockIn) > 100) {
+    tempMillis = millis();
+  }
+  if ((tempMillis > millis()-10) && (analogRead(clockIn) > 100)) {
+    newMillis = millis();
+  }
+  interval = newMillis - tempMillis;
+  Serial.println(interval);
+}
+
 void setStepState(int step, int state) {
   stepSequence[step] = state;
 }
 
 void invertStepState(int step) {
   stepSequence[step] = stepSequence[step]? 0 : 1;
+  Serial.print("Step: ");
+  Serial.print(step);
+  Serial.print(" to state: ");
+  Serial.println(stepSequence[step]);
 }
 
 void clearSteps(){
@@ -62,18 +82,25 @@ void clearSteps(){
   }
 }
 
-void setOffset(int id, int value) {
-  offsets[id] = value + interval;
+void setOffset(int pos, int value) {
+  offsets[pos] = value + interval;
 }
 
-void setAndSustain(int id, int duration){
-  digitalWrite(leds[id], HIGH);
-  sustains[id] = millis() + duration;
+void setAndSustain(int pos, int duration){
+  digitalWrite(gateOut, LOW);
+  digitalWrite(leds[pos], HIGH);
+  if (stepSequence[pos] == 1) {
+    digitalWrite(gateOut, HIGH);
+  }
+  else if (stepSequence[pos] == 0) {
+    digitalWrite(gateOut, LOW);
+  }
+  sustains[pos] = millis() + duration;
 }
 
 void loop() {
+  //setInterval();
   currentMillis = millis();
-  tempMillis = millis();
   btn0.read();
   btn1.read();
   btn2.read();
@@ -84,27 +111,33 @@ void loop() {
   }
 
   if (currentMillis - elapsedMillis >= offsets[(beat)%NUMBER_OF_STEPS]) {
-    digitalWrite(triggerOut, HIGH);
     setAndSustain((beat)%NUMBER_OF_STEPS, 50);
     elapsedMillis = currentMillis;
     beat++;
-  if (tempMillis - elapsedMillis >= interval + duration) {
-    digitalWrite(triggerOut, LOW);
-    tempMillis = currentMillis;
-    println("True");
-    }
   }
 
   if (btn0.wasPressed()) {
     invertStepState(0);
-    Serial.println("btn0");
   }
   if (btn1.wasPressed()) {
     invertStepState(1);
-    Serial.println("btn1");
   }
   if (btn2.wasPressed()) {
     invertStepState(2);
-    Serial.println("btn2");
+  }
+  if (btn3.wasPressed()) {
+    invertStepState(3);
+  }
+  if (btn4.wasPressed()) {
+    invertStepState(4);
+  }
+  if (btn5.wasPressed()) {
+    invertStepState(5);
+  }
+  if (btn6.wasPressed()) {
+    invertStepState(6);
+  }
+  if (btn7.wasPressed()) {
+    invertStepState(7);
   }
 }
