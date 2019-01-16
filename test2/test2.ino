@@ -80,3 +80,20 @@ void tempSync(){
   }
   tempMillis = millis();
 }
+
+void printSequence() {
+  for (int i = 0; i < 16; i++) {
+    if (i =! 15) {
+      Serial.print(stepSequence[i]);
+    }
+    else if (i == 15) {
+      Serial.println(stepSequence[i]);
+    }
+  }
+}
+
+void clearSequence() {
+  for (int i = 0; i < 16; i++) {
+    stepSequence[i] = 0;
+  }
+}
