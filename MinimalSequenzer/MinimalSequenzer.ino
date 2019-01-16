@@ -15,6 +15,12 @@ Button btn5 (NULL, false, false, 100);
 Button btn6 (NULL, false, false, 100);
 Button btn7 (NULL, false, false, 100);
 
+int const latchPin = 11;
+int const dataPin = 13;
+int const clockPin = 12;
+
+byte switchVar1 = 72;
+
 int const NUMBER_OF_STEPS = 8;
 int const clockIn = A5;
 int const clockOut = 0;
@@ -35,6 +41,9 @@ unsigned long newMillis = 0;
 
 void setup() {
   Serial.begin(9600);
+  pinMode(latchPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(dataPin, INPUT);
   setBpm(0, 1);
   setBpm(1, 4);
   setBpm(2, 0);
