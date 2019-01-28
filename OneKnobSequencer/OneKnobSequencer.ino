@@ -4,34 +4,32 @@
  * One knob is better than two knobs
  */
 
-int const led0 = A0;
-int const led1 = A3;
-
-int const btn = 2; //0
-int const swtch = 5;
-int const gate = 4; //1
-int const clockIn = 3;
+int const led = 3;
+int const btn = 2;
+int const swtch = 1;
+int const gate = 4;
+int const clockIn = 0;
 
 int stepSequence[16] = {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0};
 int halfStep = 0;
 
 bool recording = false;
 bool clean = false;
+bool state = false;
+bool btnState = false;
 
 void setup() {
-  pinMode(led0, OUTPUT);
-  pinMode(led1, OUTPUT);
+  pinMode(led, OUTPUT);
   pinMode(gate, OUTPUT);
   pinMode(swtch, INPUT);
-  attachInterrupt(digitalPinToInterrupt(clockIn), sync, RISING);
-  attachInterrupt(digitalPinToInterrupt(btn), recordSequence, RISING);
-  Serial.begin(9600);
-  ledState(0);
+  pinMode(btn, INPUT);
+  pinMode(clockIn, INPUT);
+  digitalWrite(gate, LOW);
+  digitalWrite(led, LOW);
 }
 
 void loop() {
   if (halfStep%8 == 0) {
-    ledState(2);
   }
   if ((digitalRead(swtch) == true) && (clean == false)) {
     clearSequence();
@@ -45,11 +43,33 @@ void loop() {
     recording = false;
     clean = false;
   }
+  if (digitalRead(clockIn) == HIGH) {
+    digitalWrite(led, HIGH);
+    if (state == false) {
+      sync();
+      state = true;
+    }
+  }
+  else if (digitalRead(clockIn) == LOW) {
+    digitalWrite(led, LOW);
+    state = false;
+  }
+  if (digitalRead(btn) == HIGH) {
+    digitalWrite(led, HIGH);
+    if (state == false) {
+      recordSequence();
+      btnState = true;
+    }
+  }
+  else if (digitalRead(clockIn) == LOW) {
+    digitalWrite(led, LOW);
+    btnState = false;
+  }
 }
 
 void recordSequence(){
   if (recording == true) {
-    ledState(2);
+    digitalWrite(led, HIGH);
     int pos = ((halfStep%16)-1);
     stepSequence[pos] = stepSequence[pos]? 0 : 1;
     if (stepSequence[pos] == 1) {
@@ -64,31 +84,11 @@ void sync() {
   digitalWrite(gate, LOW);
   if (stepSequence[((halfStep%16)-1)] == 1) {
     digitalWrite(gate, HIGH);
-    ledState(1);
+    digitalWrite(led, HIGH);
   }
   else if (stepSequence[((halfStep%16)-1)] == 0) {
     digitalWrite(gate, LOW);
-    ledState(0);
-  }
-  Serial.print("Half Step: ");
-  Serial.print(halfStep);
-}
-
-void ledState(int state) {
-  // OFF 0
-  if (state == 0) {
-    analogWrite(led0, 0);
-    analogWrite(led1, 0);
-  }
-  // Green 1
-  else if (state == 1) {
-    analogWrite(led0, 0);
-    analogWrite(led1, 255);
-  }
-  // Red 2
-  else if (state == 2) {
-    analogWrite(led0, 255);
-    analogWrite(led1, 0);
+    digitalWrite(led, LOW);
   }
 }
 
