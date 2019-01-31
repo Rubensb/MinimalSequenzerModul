@@ -1,11 +1,11 @@
-/* ATtiny Clock
+/* ArduinoMini
  * Rubens Bandelin 2019
- * Simple but unimaginary useful
+ * Still simple but unimaginary useful
  */
 
-int const clockOut = 5; //1
-int const clockOutSxth = 6; //0
-int const clockIn = 2;
+int const clockOutGth = 2; //1
+int const clockOutSxth = 3; //0
+int const clockOutSxt = 4;
 int const poti = A2;
 int const swtch = 3;
 
@@ -22,24 +22,18 @@ unsigned long elapsedMillisGth = 0;
 unsigned long currentMillis = 0;
 
 void setup() {
-  pinMode(clockOut, OUTPUT);
+  pinMode(clockOutGth, OUTPUT);
   pinMode(clockOutSxth, OUTPUT);
   pinMode(swtch, INPUT);
-  pinMode(clockIn, INPUT);
   pinMode(poti, INPUT);
 }
 
 void loop() {
-  if (digitalRead(swtch) == 1) {
-    //bpm = map(analogRead(poti), 0, 1023, 40, 200);
-    sxth = ((60000/bpm)/4);
-    gth = ((60000/bpm)/2);
-    clockLen = sxth/5;
-    clockGen();
-  }
-  if (digitalRead(swtch) == 0) {
-    clockDiv();
-  }
+  //bpm = map(analogRead(poti), 0, 1023, 40, 200);
+  sxth = ((60000/bpm)/4);
+  gth = ((60000/bpm)/2);
+  clockLen = sxth/5;
+  clockGen();
 }
 
 void clockGen() {
@@ -52,9 +46,9 @@ void clockGen() {
     }
   }
   if (currentMillis - elapsedMillisGth >= gth) {
-    digitalWrite(clockOut, HIGH);
+    digitalWrite(clockOutGth, HIGH);
     if (currentMillis - elapsedMillisGth >= gth + clockLen) {
-      digitalWrite(clockOut, LOW);
+      digitalWrite(clockOutGth, LOW);
       elapsedMillisGth = currentMillis;
     }
   }
